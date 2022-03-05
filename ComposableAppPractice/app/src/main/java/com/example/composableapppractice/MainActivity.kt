@@ -5,33 +5,32 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material.Button
+import androidx.compose.material.Card
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.composableapppractice.ui.theme.ComposableAppPracticeTheme
-import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
@@ -156,7 +155,9 @@ class MainActivity : ComponentActivity() {
 */
 
             // LazyLoad
+/*
             LazyColumn {
+*/
 /*
                 items(1000) {
                     Text(
@@ -164,7 +165,8 @@ class MainActivity : ComponentActivity() {
                         text = "item $it", textAlign = TextAlign.Center, fontSize = 20.sp
                     )
                 }
-*/
+*//*
+
 
                 itemsIndexed(listOf("Hello", "Android", "World")) { index, s ->
                     Text(
@@ -174,12 +176,96 @@ class MainActivity : ComponentActivity() {
                 }
 
             }
+*/
+
+            /*    var sizeState by remember { mutableStateOf(200.dp) }
+
+                val size by animateDpAsState(
+                    targetValue = sizeState,
+    //            tween(3000, delayMillis = 300, LinearOutSlowInEasing)
+    //                spring(Spring.DampingRatioHighBouncy)
+                    keyframes {
+                        durationMillis = 5000
+                        sizeState at 0 with LinearEasing
+                        sizeState * 1.5f at 1000 with FastOutLinearInEasing
+                        sizeState * 2f at 5000
+                    }
+                )
+                Box(
+                    modifier = Modifier.size(size).background(Color.Red),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Button(onClick = {
+                        sizeState += 50.dp
+                    }) {
+                        Text("Increase box size")
+                    }
+
+
+                }*/
+
+
+            Box(
+                modifier = Modifier.fillMaxSize().background(color = Color.Red),
+                contentAlignment = Alignment.Center
+            ) {
+//                AnimateProgressBar(percentage = 1.0f, number = 100)
+                CircularImage()
+            }
 
 
         }
 
+    }
+}
+
+
+@Composable
+fun AnimateProgressBar(
+    percentage: Float,
+    number: Int,
+    radius: Dp = 50.dp, color: Color = Color.Green,
+    strokeWidth: Dp = 8.dp,
+    animationDuration: Int = 1000,
+    animDelay: Int = 0
+) {
+    var animationPlayed by remember {
+        mutableStateOf(false)
+    }
+
+    val currentPercentage =
+        animateFloatAsState(
+            targetValue = if (animationPlayed) percentage else 0f,
+            animationSpec = tween(durationMillis = animationDuration, delayMillis = animDelay)
+        )
+
+
+    LaunchedEffect(key1 = true) {
+        animationPlayed = true
+    }
+
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(radius * 2f))
+    {
+        Canvas(modifier = Modifier.size(radius * 2f)) {
+            drawArc(
+                color = color,
+                startAngle = -90f,
+                sweepAngle = 360 * currentPercentage.value,
+                useCenter = false,
+                style = Stroke(strokeWidth.toPx(), cap = StrokeCap.Round)
+            )
+
+        }
+
+        Text(
+            text = (currentPercentage.value * number).toInt().toString(),
+            color = Color.Red
+        )
+
 
     }
+
+
 }
 
 
@@ -236,7 +322,7 @@ fun ImageCard(
 
 
             Box(
-                modifier = Modifier.fillMaxSize().padding(12.dp),
+                modifier = Modifier.fillMaxSize().padding(12.dp).background(color = Color.Red),
                 contentAlignment = Alignment.BottomStart
             ) {
                 Text(
@@ -249,6 +335,24 @@ fun ImageCard(
 
         }
     }
+
+}
+
+
+@Composable
+fun CircularImage() {
+
+    Box(modifier = Modifier.fillMaxSize()) {
+
+        Image(
+            painter = painterResource(R.drawable.andro),
+            modifier = Modifier.clip(CircleShape).size(200.dp)
+                .border(shape = CircleShape, width = 10.dp, color = Color.Black),
+
+            contentDescription = "image"
+        )
+    }
+
 
 }
 
